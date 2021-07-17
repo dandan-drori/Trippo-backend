@@ -70,7 +70,6 @@ async function update(stay) {
 			_id: ObjectId(stay._id),
 			name: stay.name,
 			price: stay.price,
-			imgFolder: 1, // TODO: REMOVE THIS LINE
 			host: stay.host,
 			summary: stay.summary,
 			imgUrls: stay.imgUrls,
@@ -96,7 +95,6 @@ async function add(stay) {
 		const stayToAdd = {
 			name: stay.name,
 			price: stay.price,
-			imgFolder: 1, // TODO: REMOVE THIS LINE
 			host: stay.host,
 			summary: stay.summary || '',
 			imgUrls: stay.imgUrls,

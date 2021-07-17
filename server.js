@@ -5,6 +5,7 @@ const expressSession = require('express-session')
 
 const app = express()
 const http = require('http').createServer(app)
+require('dotenv').config()
 
 const session = expressSession({
 	secret: 'coding is amazing',

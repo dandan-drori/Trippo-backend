@@ -28,7 +28,7 @@ async function updateOrder(req, res) {
 
 async function addOrder(req, res) {
 	try {
-		const user = userService.getById(req.session.user._id)
+		const user = await userService.getById(req.session.user._id)
 		req.body.buyer = {
 			_id: user._id,
 			fullname: user.fullname,

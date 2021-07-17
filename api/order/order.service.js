@@ -19,12 +19,13 @@ async function query(filterBy = {}) {
 	}
 }
 
-async function update(order, newStatus) {
+async function update(order) {
+	console.log('order', order)
 	try {
 		// pick only updatable fields!
 		const orderToSave = {
 			_id: ObjectId(order._id),
-			_hostId: order._hostId,
+			host: order.host,
 			createdAt: order.createdAt,
 			buyer: order.buyer,
 			totalPrice: order.totalPrice,
@@ -32,7 +33,7 @@ async function update(order, newStatus) {
 			endDate: order.endDate,
 			guests: order.guests,
 			stay: order.stay,
-			status: newStatus || order.status,
+			status: order.status,
 		}
 		const collection = await dbService.getCollection('order')
 		await collection.updateOne({ _id: orderToSave._id }, { $set: orderToSave })
@@ -62,10 +63,10 @@ async function add(order) {
 	try {
 		// peek only updatable fields!
 		const orderToAdd = {
-			hostId: order.hostId,
+			host: order.host,
 			createdAt: order.createdAt || Date.now(),
 			buyer: order.buyer,
-			totalPrice: order.totalPrice,
+			total: order.total,
 			startDate: order.startDate,
 			endDate: order.endDate,
 			guests: order.guests,
