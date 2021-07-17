@@ -1,4 +1,4 @@
-const toyService = require('../api/toy/toy.service')
+const toyService = require('../api/stay/stay.service')
 const asyncLocalStorage = require('./als.service')
 const logger = require('./logger.service')
 

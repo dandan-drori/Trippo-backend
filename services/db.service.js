@@ -1,4 +1,5 @@
 const MongoClient = require('mongodb').MongoClient
+const logger = require('./logger.service')
 
 const config = require('../config')
 
@@ -7,7 +8,7 @@ module.exports = {
 }
 
 // Database Name
-const dbName = 'toy_db'
+const dbName = 'trippo_db'
 
 var dbConn = null
 
