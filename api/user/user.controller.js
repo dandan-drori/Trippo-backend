@@ -14,13 +14,10 @@ async function getUser(req, res) {
 
 async function getUsers(req, res) {
 	try {
-		const filterBy = {}
-		if (req.query.txt) {
-			filterBy.txt = req.query.txt || ''
-		}
-		if (req.query.minBalance) {
-			filterBy.minBalance = +req.query.minBalance || 0
-		}
+		// const filterBy = {}
+		// if (req.query.txt) {
+		// 	filterBy.txt = req.query.txt || ''
+		// }
 		const users = await userService.query(filterBy)
 		res.send(users)
 	} catch (err) {
@@ -44,7 +41,7 @@ async function updateUser(req, res) {
 		const user = req.body
 		const savedUser = await userService.update(user)
 		res.send(savedUser)
-		socketService.broadcast({ type: 'user-updated', data: review, to: savedUser._id })
+		// socketService.broadcast({ type: 'user-updated', data: review, to: savedUser._id })
 	} catch (err) {
 		logger.error('Failed to update user', err)
 		res.status(500).send({ err: 'Failed to update user' })

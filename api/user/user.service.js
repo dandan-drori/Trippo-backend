@@ -1,6 +1,6 @@
 const dbService = require('../../services/db.service')
 const logger = require('../../services/logger.service')
-const reviewService = require('../review/review.service')
+const reviewService = require('../order/order.service')
 const ObjectId = require('mongodb').ObjectId
 
 module.exports = {
@@ -77,7 +77,9 @@ async function update(user) {
 			_id: ObjectId(user._id),
 			username: user.username,
 			fullname: user.fullname,
-			score: user.score,
+			imgUrl: user.imgUrl,
+			orders: user.orders,
+			stays: user.stays,
 		}
 		const collection = await dbService.getCollection('user')
 		await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
@@ -95,8 +97,11 @@ async function add(user) {
 			username: user.username,
 			password: user.password,
 			fullname: user.fullname,
-			score: user.score || 0,
-			isAdmin: user.isAdmin || false,
+			imgUrl:
+				user.imgUrl ||
+				'http://res.cloudinary.com/dandan-img-cloud/image/upload/v1626521972/johtdlkck2tptcawkglt.png',
+			orders: user.orders || [],
+			stays: user.stays || [],
 		}
 		const collection = await dbService.getCollection('user')
 		await collection.insertOne(userToAdd)
