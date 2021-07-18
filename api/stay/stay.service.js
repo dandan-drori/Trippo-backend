@@ -13,8 +13,15 @@ module.exports = {
 	addChatMsg,
 }
 
-async function query(filterBy = {}) {
-	if (filterBy) filterBy = JSON.parse(filterBy)
+async function query(
+	filterBy = {
+		price: '[0, 1500]',
+		types: '[]',
+		amenities: '[]',
+		city: '',
+	}
+) {
+	if (filterBy) filterBy = JSON.parse(JSON.stringify(filterBy))
 	const criteria = _buildCriteria(filterBy)
 	try {
 		const collection = await dbService.getCollection('stay')
@@ -122,6 +129,7 @@ async function addChatMsg(msg, stayId) {
 function _buildCriteria(filterBy) {
 	filterBy.price[0] = +filterBy.price[0]
 	filterBy.price[1] = +filterBy.price[1]
+	console.log('filterBy', filterBy)
 	const criteria = {}
 	if (filterBy.name) {
 		const txtCriteria = { $regex: filterBy.name, $options: 'i' }
@@ -131,14 +139,14 @@ function _buildCriteria(filterBy) {
 			},
 		]
 	}
-	if (filterBy.types.length) {
+	if (filterBy.types && filterBy.types.length) {
 		criteria.propertyType = { $in: filterBy.types }
 	}
-	if (filterBy.price.length) {
+	if (filterBy.price && filterBy.price.length) {
 		criteria.price = { $gt: filterBy.price[0], $lt: filterBy.price[1] }
 	}
-	if (filterBy.amenities.length) {
-		criteria.amenities = { $all: filterBy.amenities }
+	if (filterBy.amenities && filterBy.amenities.length) {
+		criteria['amenities.txt'] = { $all: filterBy.amenities }
 	}
 	if (filterBy.city) {
 		switch (filterBy.city) {
@@ -153,15 +161,9 @@ function _buildCriteria(filterBy) {
 				break
 		}
 		// const cityCriteria = { $regex: filterBy.city, $options: 'i' }
-		// criteria.$or = [
-		// 	{
-		// 		'loc.address': cityCriteria,
-		// 	},
-		// ]
+		criteria.loc = { country: 'France' }
 		// criteria['loc.address'] = cityCriteria
-		criteria['loc.address'] = { $eq: filterBy.city }
-
-		console.log('criteria row 152', criteria)
-		return criteria
+		console.log('criteria', criteria)
 	}
+	return criteria
 }
