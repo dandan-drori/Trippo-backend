@@ -7,13 +7,10 @@ router.get('/', getStays)
 router.get('/:id', getStay)
 
 // middleware that is specific to this router
-// router.use(requireAuth)
+router.use(requireAuth)
 
-// router.post('/', requireAuth, updateStay)
-router.post('/', updateStay)
-// router.put('/:id', requireAuth, updateStay)
-router.put('/:id', updateStay)
-// router.delete('/:id', requireAuth, deleteStay)
-router.delete('/:id', deleteStay)
+router.post('/', requireAuth, updateStay)
+router.put('/:id', requireAuth, updateStay)
+router.delete('/:id', requireAuth, deleteStay)
 
 module.exports = router

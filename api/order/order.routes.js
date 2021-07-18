@@ -8,11 +8,9 @@ const router = express.Router()
 
 router.get('/', log, getOrders)
 
-// router.use(requireAuth)
+router.use(requireAuth)
 
-// router.post('/', requireAuth, addOrder)
-router.post('/', addOrder)
-// router.put('/:id', requireAuth, updateOrder)
-router.put('/:id', updateOrder)
+router.post('/', requireAuth, addOrder)
+router.put('/:id', requireAuth, updateOrder)
 
 module.exports = router
