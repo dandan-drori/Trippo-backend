@@ -129,7 +129,6 @@ async function addChatMsg(msg, stayId) {
 function _buildCriteria(filterBy) {
 	filterBy.price[0] = +filterBy.price[0]
 	filterBy.price[1] = +filterBy.price[1]
-	console.log('filterBy', filterBy)
 	const criteria = {}
 	if (filterBy.name) {
 		const txtCriteria = { $regex: filterBy.name, $options: 'i' }
@@ -160,10 +159,8 @@ function _buildCriteria(filterBy) {
 				filterBy.city += ', France'
 				break
 		}
-		// const cityCriteria = { $regex: filterBy.city, $options: 'i' }
-		criteria.loc = { country: 'France' }
-		// criteria['loc.address'] = cityCriteria
-		console.log('criteria', criteria)
+		const cityCriteria = { $regex: filterBy.city, $options: 'i' }
+		criteria['loc.address'] = cityCriteria
 	}
 	return criteria
 }
