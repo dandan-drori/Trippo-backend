@@ -18,7 +18,7 @@ async function getOrders(req, res) {
 
 async function updateOrder(req, res) {
 	try {
-		await orderService.update(req.body)
+		await orderService.update(req.body, req.session.user._id)
 		res.send({ msg: 'Updated successfully' })
 	} catch (err) {
 		logger.error('Failed to update order', err)
@@ -34,7 +34,7 @@ async function addOrder(req, res) {
 			fullname: user.fullname,
 			imgUrl: user.imgUrl,
 		}
-		const order = await orderService.add(req.body)
+		const order = await orderService.add(req.body, req.session.user._id)
 
 		// TODO: notify users when a new order has been made!
 		// prepare the updated review for sending out

@@ -1,8 +1,7 @@
-const utilService = require('../../services/util.service');
-const dbService = require('../../services/db.service');
-const logger = require('../../services/logger.service');
-
-const ObjectId = require('mongodb').ObjectId;
+const dbService = require('../../services/db.service')
+const logger = require('../../services/logger.service')
+const socketService = require('../../services/socket.service')
+const ObjectId = require('mongodb').ObjectId
 
 module.exports = {
   query,
@@ -34,14 +33,13 @@ async function query(
 }
 
 async function getById(stayId) {
-  try {
-    const collection = await dbService.getCollection('stay');
-    const stay = await collection.findOne({ _id: ObjectId(stayId) });
-    return stay;
-  } catch (err) {
-    logger.error(`while finding stay ${stayId}`, err);
-    throw err;
-  }
+	try {
+		const collection = await dbService.getCollection('stay')
+		return await collection.findOne({ _id: ObjectId(stayId) })
+	} catch (err) {
+		logger.error(`while finding stay ${stayId}`, err)
+		throw err
+	}
 }
 
 async function getByStayName(stayName) {
@@ -66,6 +64,7 @@ async function remove(stayId) {
 }
 
 async function update(stay) {
+<<<<<<< HEAD
   try {
     // pick only updatable fields!
     const stayToSave = {
@@ -89,6 +88,38 @@ async function update(stay) {
     logger.error(`cannot update stay ${stay._id}`, err);
     throw err;
   }
+=======
+	const oldStay = await getById(stay._id)
+	if (oldStay.reviews.length !== stay.reviews.length) {
+		socketService.emitTo({
+			type: 'review-added',
+			data: stay.reviews[0],
+		})
+	}
+	try {
+		// pick only updatable fields!
+		const stayToSave = {
+			_id: ObjectId(stay._id),
+			name: stay.name,
+			price: stay.price,
+			host: stay.host,
+			summary: stay.summary,
+			imgUrls: stay.imgUrls,
+			propertyType: stay.propertyType,
+			accommodates: stay.accommodates,
+			amenities: stay.amenities || [],
+			loc: stay.loc,
+			reviews: stay.reviews,
+			chatMsgs: stay.chatMsgs,
+		}
+		const collection = await dbService.getCollection('stay')
+		await collection.updateOne({ _id: stayToSave._id }, { $set: stayToSave })
+		return stayToSave
+	} catch (err) {
+		logger.error(`cannot update stay ${stay._id}`, err)
+		throw err
+	}
+>>>>>>> 95667ca74cb0be8565d940141f03b2dc8d045776
 }
 
 async function add(stay) {
@@ -131,6 +162,7 @@ async function addChatMsg(msg, stayId) {
 }
 
 function _buildCriteria(filterBy) {
+<<<<<<< HEAD
   filterBy.price[0] = +filterBy.price[0];
   filterBy.price[1] = +filterBy.price[1];
   const criteria = {};
@@ -167,4 +199,31 @@ function _buildCriteria(filterBy) {
     criteria['loc.address'] = cityCriteria;
   }
   return criteria;
+=======
+	filterBy.price[0] = +filterBy.price[0]
+	filterBy.price[1] = +filterBy.price[1]
+	const criteria = {}
+	if (filterBy.name) {
+		const txtCriteria = { $regex: filterBy.name, $options: 'i' }
+		criteria.$or = [
+			{
+				name: txtCriteria,
+			},
+		]
+	}
+	if (filterBy.types && filterBy.types.length) {
+		criteria.propertyType = { $in: filterBy.types }
+	}
+	if (filterBy.price && filterBy.price.length) {
+		criteria.price = { $gt: filterBy.price[0], $lt: filterBy.price[1] }
+	}
+	if (filterBy.amenities && filterBy.amenities.length) {
+		criteria['amenities.txt'] = { $all: filterBy.amenities }
+	}
+	if (filterBy.city) {
+		const cityCriteria = { $regex: filterBy.city, $options: 'i' }
+		criteria['loc.address'] = cityCriteria
+	}
+	return criteria
+>>>>>>> 95667ca74cb0be8565d940141f03b2dc8d045776
 }
