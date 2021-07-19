@@ -2,6 +2,7 @@ const dbService = require('../../services/db.service')
 const ObjectId = require('mongodb').ObjectId
 const asyncLocalStorage = require('../../services/als.service')
 const logger = require('../../services/logger.service')
+const socketService = require('../../services/socket.service')
 
 async function query(filterBy = {}) {
 	try {
@@ -19,8 +20,25 @@ async function query(filterBy = {}) {
 	}
 }
 
-async function update(order) {
-	console.log('order', order)
+async function getById(orderId) {
+	try {
+		const collection = await dbService.getCollection('order')
+		return await collection.findOne({ _id: ObjectId(orderId) })
+	} catch (err) {
+		logger.error(`while finding order ${orderId}`, err)
+		throw err
+	}
+}
+
+async function update(order, userId) {
+	if (order.buyer._id === userId) {
+		console.log('order', order)
+		console.log('userId', userId)
+		socketService.emitTo({
+			type: 'order-updated',
+			data: order,
+		})
+	}
 	try {
 		// pick only updatable fields!
 		const orderToSave = {
@@ -59,7 +77,14 @@ async function update(order) {
 // 	}
 // }
 
-async function add(order) {
+async function add(order, userId) {
+	if (userId && order.host._id !== userId) {
+		order.status = 'pending'
+		socketService.emitTo({
+			type: 'user-updated',
+			data: order,
+		})
+	}
 	try {
 		// peek only updatable fields!
 		const orderToAdd = {

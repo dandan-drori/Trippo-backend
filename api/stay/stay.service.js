@@ -1,6 +1,6 @@
-const utilService = require('../../services/util.service')
 const dbService = require('../../services/db.service')
 const logger = require('../../services/logger.service')
+const socketService = require('../../services/socket.service')
 const ObjectId = require('mongodb').ObjectId
 
 module.exports = {
@@ -35,8 +35,7 @@ async function query(
 async function getById(stayId) {
 	try {
 		const collection = await dbService.getCollection('stay')
-		const stay = await collection.findOne({ _id: ObjectId(stayId) })
-		return stay
+		return await collection.findOne({ _id: ObjectId(stayId) })
 	} catch (err) {
 		logger.error(`while finding stay ${stayId}`, err)
 		throw err
@@ -65,6 +64,13 @@ async function remove(stayId) {
 }
 
 async function update(stay) {
+	const oldStay = await getById(stay._id)
+	if (oldStay.reviews.length !== stay.reviews.length) {
+		socketService.emitTo({
+			type: 'review-added',
+			data: stay.reviews[0],
+		})
+	}
 	try {
 		// pick only updatable fields!
 		const stayToSave = {
@@ -148,17 +154,6 @@ function _buildCriteria(filterBy) {
 		criteria['amenities.txt'] = { $all: filterBy.amenities }
 	}
 	if (filterBy.city) {
-		switch (filterBy.city) {
-			case 'Amsterdam':
-				filterBy.city += ', Netherlands'
-				break
-			case 'New York':
-				filterBy.city += ', New York'
-				break
-			case 'Paris':
-				filterBy.city += ', France'
-				break
-		}
 		const cityCriteria = { $regex: filterBy.city, $options: 'i' }
 		criteria['loc.address'] = cityCriteria
 	}

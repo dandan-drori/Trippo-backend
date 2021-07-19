@@ -1,6 +1,14 @@
-const toyService = require('../api/stay/stay.service')
+// const stayService = require('../api/stay/stay.service')
+// const orderService = require('../api/stay/stay.service')
 const asyncLocalStorage = require('./als.service')
 const logger = require('./logger.service')
+
+module.exports = {
+	connectSockets,
+	emitToAll,
+	emitTo,
+	broadcast,
+}
 
 var gIo = null
 var gSocketBySessionIdMap = {}
@@ -39,11 +47,17 @@ function connectSockets(http, session) {
 			// emits to all sockets:
 			// gIo.emit('chat addMsg', msg)
 			// emits only to sockets in the same room
-			await toyService.addChatMsg(msg, toyId)
+			await stayService.addChatMsg(msg, toyId)
 			gIo.to(socket.myTopic).emit('chat addMsg', msg)
 		})
-		socket.on('toy-watch', toyId => {
-			socket.join(toyId)
+		socket.on('review-added', review => {
+			console.log('review', review)
+		})
+		socket.on('stay-watch', stayId => {
+			socket.join(stayId)
+		})
+		socket.on('order-watch', orderId => {
+			socket.join(orderId)
 		})
 		socket.on('set typing', typingData => {
 			gIo.to(socket.myTopic).emit('change typing', typingData)
@@ -78,11 +92,4 @@ function broadcast({ type, data, room = null }) {
 	if (!excludedSocket) return logger.debug('Shouldnt happen, No socket in map')
 	if (room) excludedSocket.broadcast.to(room).emit(type, data)
 	else excludedSocket.broadcast.emit(type, data)
-}
-
-module.exports = {
-	connectSockets,
-	emitToAll,
-	emitTo,
-	broadcast,
 }
