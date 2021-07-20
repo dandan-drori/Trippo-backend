@@ -78,8 +78,6 @@ async function update(user) {
 			username: user.username,
 			fullname: user.fullname,
 			imgUrl: user.imgUrl,
-			orders: user.orders,
-			stays: user.stays,
 		}
 		const collection = await dbService.getCollection('user')
 		await collection.updateOne({ _id: userToSave._id }, { $set: userToSave })
@@ -100,8 +98,6 @@ async function add(user) {
 			imgUrl:
 				user.imgUrl ||
 				'http://res.cloudinary.com/dandan-img-cloud/image/upload/v1626521972/johtdlkck2tptcawkglt.png',
-			orders: user.orders || [],
-			stays: user.stays || [],
 		}
 		const collection = await dbService.getCollection('user')
 		await collection.insertOne(userToAdd)

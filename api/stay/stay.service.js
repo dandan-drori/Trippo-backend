@@ -64,13 +64,13 @@ async function remove(stayId) {
 }
 
 async function update(stay) {
-	const oldStay = await getById(stay._id)
-	if (oldStay.reviews.length !== stay.reviews.length) {
-		socketService.emitTo({
-			type: 'review-added',
-			data: stay.reviews[0],
-		})
-	}
+	// const oldStay = await getById(stay._id)
+	// if (oldStay.reviews.length !== stay.reviews.length) {
+	// 	socketService.emitTo({
+	// 		type: 'review-added',
+	// 		data: stay.reviews[0],
+	// 	})
+	// }
 	try {
 		// pick only updatable fields!
 		const stayToSave = {

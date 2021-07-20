@@ -30,15 +30,11 @@ async function getById(orderId) {
 	}
 }
 
-async function update(order, userId) {
-	if (order.buyer._id === userId) {
-		console.log('order', order)
-		console.log('userId', userId)
-		socketService.emitTo({
-			type: 'order-updated',
-			data: order,
-		})
-	}
+async function update(order) {
+	// socketService.emitTo({
+	// 	type: 'order-updated',
+	// 	data: order,
+	// })
 	try {
 		// pick only updatable fields!
 		const orderToSave = {
@@ -77,14 +73,12 @@ async function update(order, userId) {
 // 	}
 // }
 
-async function add(order, userId) {
-	if (userId && order.host._id !== userId) {
-		order.status = 'pending'
-		socketService.emitTo({
-			type: 'user-updated',
-			data: order,
-		})
-	}
+async function add(order) {
+	order.status = 'pending'
+	socketService.emitTo({
+		type: 'order-added',
+		data: order,
+	})
 	try {
 		// peek only updatable fields!
 		const orderToAdd = {

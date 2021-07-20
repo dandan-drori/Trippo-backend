@@ -50,14 +50,20 @@ function connectSockets(http, session) {
 			await stayService.addChatMsg(msg, toyId)
 			gIo.to(socket.myTopic).emit('chat addMsg', msg)
 		})
-		socket.on('review-added', review => {
-			console.log('review', review)
-		})
 		socket.on('stay-watch', stayId => {
 			socket.join(stayId)
 		})
-		socket.on('order-watch', orderId => {
-			socket.join(orderId)
+		socket.on('review-added', () => {
+			socket.to('review-watch').emit('review-added')
+		})
+		socket.on('order_added', data => {
+			console.log('data', data)
+			socket.emit('order-added', data)
+		})
+		socket.on('order-added-watch', () => {})
+		socket.on('order-watch', () => {})
+		socket.on('order-updated', () => {
+			socket.to('order-watch').emit('order-updated')
 		})
 		socket.on('set typing', typingData => {
 			gIo.to(socket.myTopic).emit('change typing', typingData)
