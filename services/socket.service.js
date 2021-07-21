@@ -7,6 +7,7 @@ module.exports = {
 	connectSockets,
 	emitToAll,
 	emitTo,
+	emitToUser,
 	broadcast,
 }
 
@@ -53,17 +54,11 @@ function connectSockets(http, session) {
 		socket.on('stay-watch', stayId => {
 			socket.join(stayId)
 		})
-		socket.on('review-added', () => {
-			socket.to('review-watch').emit('review-added')
+		socket.on('order-added-watch', userId => {
+			socket.join(userId)
 		})
-		socket.on('order_added', data => {
-			console.log('data', data)
-			socket.emit('order-added', data)
-		})
-		socket.on('order-added-watch', () => {})
-		socket.on('order-watch', () => {})
-		socket.on('order-updated', () => {
-			socket.to('order-watch').emit('order-updated')
+		socket.on('order-watch', userId => {
+			socket.join(userId)
 		})
 		socket.on('set typing', typingData => {
 			gIo.to(socket.myTopic).emit('change typing', typingData)

@@ -31,10 +31,6 @@ async function getById(orderId) {
 }
 
 async function update(order) {
-	// socketService.emitTo({
-	// 	type: 'order-updated',
-	// 	data: order,
-	// })
 	try {
 		// pick only updatable fields!
 		const orderToSave = {
@@ -51,6 +47,11 @@ async function update(order) {
 		}
 		const collection = await dbService.getCollection('order')
 		await collection.updateOne({ _id: orderToSave._id }, { $set: orderToSave })
+		socketService.emitToUser({
+			type: 'order-updated',
+			data: orderToSave,
+			userId: orderToSave.buyer._id,
+		})
 		return orderToSave
 	} catch (err) {
 		logger.error(`cannot update order ${order._id}`, err)
@@ -74,11 +75,6 @@ async function update(order) {
 // }
 
 async function add(order) {
-	order.status = 'pending'
-	socketService.emitTo({
-		type: 'order-added',
-		data: order,
-	})
 	try {
 		// peek only updatable fields!
 		const orderToAdd = {
@@ -94,6 +90,10 @@ async function add(order) {
 		}
 		const collection = await dbService.getCollection('order')
 		await collection.insertOne(orderToAdd)
+		socketService.emitTo({
+			type: 'order-added',
+			data: orderToAdd,
+		})
 		return orderToAdd
 	} catch (err) {
 		logger.error('cannot insert order', err)
