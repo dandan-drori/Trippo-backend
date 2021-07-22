@@ -44,8 +44,6 @@ async function updateStay(req, res) {
 			})
 		}
 		res.send(savedStay)
-		// TODO:
-		// socketService.broadcast({ type: 'stay-updated', data: savedStay, to: savedUser._id })
 	} catch (err) {
 		logger.error('Failed to update stay', err)
 		res.status(500).send({ err: 'Failed to update stay' })

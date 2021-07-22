@@ -38,7 +38,7 @@ async function update(order) {
 			host: order.host,
 			createdAt: order.createdAt,
 			buyer: order.buyer,
-			totalPrice: order.totalPrice,
+			total: order.total,
 			startDate: order.startDate,
 			endDate: order.endDate,
 			guests: order.guests,
