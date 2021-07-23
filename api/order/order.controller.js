@@ -1,6 +1,4 @@
 const logger = require('../../services/logger.service')
-const userService = require('../user/user.service')
-const stayService = require('../stay/stay.service')
 const socketService = require('../../services/socket.service')
 const orderService = require('./order.service')
 
@@ -19,6 +17,11 @@ async function getOrders(req, res) {
 async function updateOrder(req, res) {
 	try {
 		const updatedOrder = await orderService.update(req.body)
+		socketService.emitToUser({
+			type: 'order-updated',
+			data: updatedOrder,
+			userId: updatedOrder.buyer._id,
+		})
 		res.send(updatedOrder)
 	} catch (err) {
 		logger.error('Failed to update order', err)

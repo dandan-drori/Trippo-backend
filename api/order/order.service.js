@@ -47,11 +47,6 @@ async function update(order) {
 		}
 		const collection = await dbService.getCollection('order')
 		await collection.updateOne({ _id: orderToSave._id }, { $set: orderToSave })
-		socketService.emitToUser({
-			type: 'order-updated',
-			data: orderToSave,
-			userId: orderToSave.buyer._id,
-		})
 		return orderToSave
 	} catch (err) {
 		logger.error(`cannot update order ${order._id}`, err)
