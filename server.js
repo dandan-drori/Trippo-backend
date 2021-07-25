@@ -11,7 +11,8 @@ const session = expressSession({
 	secret: 'coding is amazing',
 	resave: false,
 	saveUninitialized: true,
-	cookie: { secure: false },
+	cookie: { secure: false, maxAge: 1000 * 60 * 60 * 3 },
+	expires: new Date(Date.now() + 30 * 86400 * 1000),
 })
 // Express App Config
 app.use(express.json())
